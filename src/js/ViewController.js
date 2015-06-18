@@ -36,7 +36,6 @@ ViewController.prototype.establishHandlers = function() {
   document.getElementById('blog-undo-button')
   .addEventListener('click', function(e) {
     e.preventDefault();
-
     that.handleUndo();
   });
 };
@@ -98,7 +97,6 @@ ViewController.prototype.handleSubmit = function(data) {
 
 ViewController.prototype.handleDelete = function(data) {
   var response = this.deletePost(data);
-
   if(response.status === 200){
     this.addAction({
       actionType: 'delete',
@@ -129,14 +127,16 @@ ViewController.prototype.undo = function() {
   if(action){
     var postModel = this.getPost(action.id);
 
+    var isAdd = action.actionType === "add";
+
     postModel.update({
-      deleted: action.actionType === "add"
+      deleted: isAdd
     });
 
-    if(action.actionType === "add") {
+    if(isAdd) {
       this.deletePostFromView(postModel);
     }
-    else if(action.actionType === "delete") {
+    else {
       this.addPostToView(postModel);
     }
   }
