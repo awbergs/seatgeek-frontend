@@ -62,7 +62,8 @@ body {
   font-size: 16px;
 }
 
-.blog-body__form-section__form__submit {
+.blog-body__form-section__form__submit,
+.blog-post__delete-section__button {
   border: 0;
   padding: 8px;
   font-size: 16px;
@@ -73,12 +74,14 @@ body {
   outline: none;
 }
 
-.blog-body__form-section__form__submit:hover {
+.blog-body__form-section__form__submit:hover,
+.blog-post__delete-section__button:hover {
   cursor: pointer;
   background-color: #3498db;
 }
 
-.blog-body__form-section__form__submit:active {
+.blog-body__form-section__form__submit:active,
+.blog-post__delete-section__button:active {
   background-color: #2385c7;
 }
 
@@ -107,4 +110,7 @@ body {
 
 .blog-post__body {
   font-family: 'ff-tisa-sans-web-pro';
+}
+.blog-post__delete-section{
+  margin-top: 10px;
 }

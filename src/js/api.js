@@ -51,6 +51,9 @@ var API = {
       result.body = stringData;
     }
     return result;
+  },
+  delete: function(id) {
+    
   }
 }
 
