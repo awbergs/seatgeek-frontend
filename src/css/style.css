@@ -122,3 +122,7 @@ body {
 .blog-post__delete-section{
   margin-top: 10px;
 }
+
+.hide{
+  display: none;
+}

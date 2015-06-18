@@ -61,6 +61,9 @@
 	var ViewController = function(model) {
 	  this.model = model;
 	  this.postCollection = [];
+	  this.deletedPosts = [];
+	  this.actions = [];
+	  this.undoButton = document.getElementById('blog-undo-button');
 
 	  var postTemplate = document.getElementById('blog-post-template');
 	  this.template = _.template(postTemplate.textContent.trim());
@@ -85,7 +88,14 @@
 	      title: title,
 	      body: body
 	    });
-	  })
+	  });
+
+	  document.getElementById('blog-undo-button')
+	  .addEventListener('click', function(e) {
+	    e.preventDefault();
+
+	    that.handleUndo();
+	  });
 	};
 
 	ViewController.prototype.establishPostHandlers = function(postDOMElement) {
@@ -141,11 +151,41 @@
 	  this.deletePost(data);
 	};
 
+	ViewController.prototype.handleUndo = function() {
+	  this.undo();
+	};
+
+	ViewController.prototype.addAction = function(data) {
+	  this.actions.unshift(data);
+	  this.showUndo();
+	};
+
+	ViewController.prototype.showUndo = function() {
+	  this.undoButton.classList.remove('hide');
+	};
+
+	ViewController.prototype.hideUndo = function() {
+	  this.undoButton.classList.add('hide');
+	};
+
+	ViewController.prototype.undo = function() {
+	  var action = this.actions.shift();
+	  console.log(action);
+	  if(this.actions.length === 0){
+	    this.hideUndo();
+	  }
+	};
+
 	ViewController.prototype.addPost = function(data) {
 	  var postModel = new Post(data);
 	  var response = postModel.save();
 	  if (response.status === 200) {
 	    this.postCollection.push(postModel);
+
+	    this.addAction({
+	      actionType: 'add',
+	      data: postModel.attributes
+	    });
 	  }
 
 	  var elements = this.generatePostDOMElements([postModel]);
@@ -161,8 +201,14 @@
 	    _.remove(this.postCollection, function(post){
 	      return post === postModel;
 	    });
-	    var postDOMElement = document.getElementById('blog-post-' + data.id)
+
+	    var postDOMElement = document.getElementById('blog-post-' + data.id);
 	    postDOMElement.parentNode.removeChild(postDOMElement);
+
+	    this.addAction({
+	      actionType: 'delete',
+	      data: postModel.attributes
+	    });
 	  }
 	};
 
