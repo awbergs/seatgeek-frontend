@@ -232,6 +232,8 @@
 	      status: 200
 	    };
 
+	    localStorage.removeItem(POST_KEY_PREFIX + data.id);
+
 	    return result;
 	  }
 	}
@@ -264,7 +266,7 @@
 	};
 
 	Post.prototype.delete = function() {
-	  return API.delete(this);
+	  return API.delete(this.attributes);
 	}
 
 	module.exports = Post;

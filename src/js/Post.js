@@ -18,7 +18,7 @@ Post.prototype.save = function() {
 };
 
 Post.prototype.delete = function() {
-  return API.delete(this);
+  return API.delete(this.attributes);
 }
 
 module.exports = Post;

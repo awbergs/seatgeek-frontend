@@ -57,6 +57,8 @@ var API = {
       status: 200
     };
 
+    localStorage.removeItem(POST_KEY_PREFIX + data.id);
+
     return result;
   }
 }
