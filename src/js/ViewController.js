@@ -37,7 +37,7 @@ ViewController.prototype.establishPostHandlers = function(postDOMElement) {
   postDOMElement.getElementsByClassName('blog-post__delete-section__button')[0]
   .addEventListener('click', function(e) {
     e.preventDefault();
-    var postId = this.dataset.postid;
+    var postId = parseInt(this.dataset.postid);
     that.handleDelete({
       id: postId
     });
@@ -97,7 +97,9 @@ ViewController.prototype.addPost = function(data) {
 };
 
 ViewController.prototype.deletePost = function(data) {
-  var postModel = _.find(this.postCollection, {id: data.id});
+  var postModel = _.find(this.postCollection, function(post){
+    return post.attributes.id === data.id;
+  });
   console.log(postModel);
   var response = postModel.delete();
   if(response.status === 200){

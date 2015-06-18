@@ -93,7 +93,7 @@
 	  postDOMElement.getElementsByClassName('blog-post__delete-section__button')[0]
 	  .addEventListener('click', function(e) {
 	    e.preventDefault();
-	    var postId = this.dataset.postid;
+	    var postId = parseInt(this.dataset.postid);
 	    that.handleDelete({
 	      id: postId
 	    });
@@ -115,6 +115,7 @@
 	    var html = that.template(post.attributes);
 	    var wrapperDiv = document.createElement('div');
 	    wrapperDiv.innerHTML = html;
+	    that.establishPostHandlers(wrapperDiv.firstChild);
 	    return wrapperDiv.firstChild;
 	  });
 	};
@@ -124,14 +125,12 @@
 	  var bodyContent = document.getElementsByClassName('blog-body__content')[0];
 	  postDOMElements.forEach(function(element) {
 	    bodyContent.appendChild(element);
-	    that.establishPostHandlers(element);
 	  });
 	};
 
 	ViewController.prototype.renderPost = function(postDOMElement) {
 	  var parent = document.getElementsByClassName('blog-body__content')[0];
 	  parent.insertBefore(postDOMElement, parent.firstChild);
-	  this.establishPostHandlers(postDOMElement);
 	};
 
 	ViewController.prototype.handleSubmit = function(data) {
@@ -154,7 +153,15 @@
 	};
 
 	ViewController.prototype.deletePost = function(data) {
-	  console.log(data);
+	  var postModel = _.find(this.postCollection, function(post){
+	    return post.attributes.id === data.id;
+	  });
+	  console.log(postModel);
+	  var response = postModel.delete();
+	  if(response.status === 200){
+	    //delete from postCollection
+	    //delete from view
+	  }
 	};
 
 	module.exports = ViewController;
@@ -218,8 +225,12 @@
 	    }
 	    return result;
 	  },
-	  delete: function(id) {
-	    
+	  delete: function(data) {
+	    var result = {
+	      status: 200
+	    };
+
+	    return result;
 	  }
 	}
 
@@ -249,6 +260,10 @@
 	Post.prototype.save = function() {
 	  return API.post(this.attributes);
 	};
+
+	Post.prototype.delete = function() {
+	  return API.delete(this);
+	}
 
 	module.exports = Post;
 
