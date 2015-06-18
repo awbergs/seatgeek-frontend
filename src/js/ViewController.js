@@ -29,7 +29,7 @@ ViewController.prototype.establishHandlers = function() {
       title: title,
       body: body
     });
-  })
+  });
 };
 
 ViewController.prototype.establishPostHandlers = function(postDOMElement) {
@@ -105,7 +105,7 @@ ViewController.prototype.deletePost = function(data) {
     _.remove(this.postCollection, function(post){
       return post === postModel;
     });
-    var postDOMElement = document.getElementById('blog-post-' + data.id)
+    var postDOMElement = document.getElementById('blog-post-' + data.id);
     postDOMElement.parentNode.removeChild(postDOMElement);
   }
 };

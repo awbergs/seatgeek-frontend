@@ -63,7 +63,8 @@ body {
 }
 
 .blog-body__form-section__form__submit,
-.blog-post__delete-section__button {
+.blog-post__delete-section__button,
+#blog-undo-button {
   border: 0;
   padding: 8px;
   font-size: 16px;
@@ -74,14 +75,21 @@ body {
   outline: none;
 }
 
+#blog-undo-button{
+  position: absolute;
+  right: 10px;
+}
+
 .blog-body__form-section__form__submit:hover,
-.blog-post__delete-section__button:hover {
+.blog-post__delete-section__button:hover,
+#blog-undo-button:hover {
   cursor: pointer;
   background-color: #3498db;
 }
 
 .blog-body__form-section__form__submit:active,
-.blog-post__delete-section__button:active {
+.blog-post__delete-section__button:active,
+#blog-undo-button:active {
   background-color: #2385c7;
 }
 
