@@ -97,7 +97,13 @@ ViewController.prototype.addPost = function(data) {
 };
 
 ViewController.prototype.deletePost = function(data) {
-  console.log(data);
+  var postModel = _.find(this.postCollection, {id: data.id});
+  console.log(postModel);
+  var response = postModel.delete();
+  if(response.status === 200){
+    //delete from postCollection
+    //delete from view
+  }
 };
 
 module.exports = ViewController;

@@ -52,8 +52,12 @@ var API = {
     }
     return result;
   },
-  delete: function(id) {
-    
+  delete: function(data) {
+    var result = {
+      status: 200
+    };
+
+    return result;
   }
 }
 
