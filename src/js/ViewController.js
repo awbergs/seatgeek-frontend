@@ -114,7 +114,14 @@ ViewController.prototype.hideUndo = function() {
 
 ViewController.prototype.undo = function() {
   var action = this.actions.shift();
-  console.log(action);
+  if(action){
+    if(action.actionType == "add") {
+      this.deletePost(action.data);
+    }
+    else if(action.actionType == "delete") {
+      this.addPost(action.data);
+    }
+  }
   if(this.actions.length === 0){
     this.hideUndo();
   }
