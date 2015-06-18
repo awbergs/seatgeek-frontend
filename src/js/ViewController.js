@@ -100,11 +100,13 @@ ViewController.prototype.deletePost = function(data) {
   var postModel = _.find(this.postCollection, function(post){
     return post.attributes.id === data.id;
   });
-  console.log(postModel);
   var response = postModel.delete();
   if(response.status === 200){
-    //delete from postCollection
-    //delete from view
+    _.remove(this.postCollection, function(post){
+      return post === postModel;
+    });
+    var postDOMElement = document.getElementById('blog-post-' + data.id)
+    postDOMElement.parentNode.removeChild(postDOMElement);
   }
 };
 
