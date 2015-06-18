@@ -59,6 +59,7 @@ ViewController.prototype.generatePostDOMElements = function(posts) {
     var html = that.template(post.attributes);
     var wrapperDiv = document.createElement('div');
     wrapperDiv.innerHTML = html;
+    that.establishPostHandlers(wrapperDiv.firstChild);
     return wrapperDiv.firstChild;
   });
 };
@@ -68,14 +69,12 @@ ViewController.prototype.renderPosts = function(postDOMElements) {
   var bodyContent = document.getElementsByClassName('blog-body__content')[0];
   postDOMElements.forEach(function(element) {
     bodyContent.appendChild(element);
-    that.establishPostHandlers(element);
   });
 };
 
 ViewController.prototype.renderPost = function(postDOMElement) {
   var parent = document.getElementsByClassName('blog-body__content')[0];
   parent.insertBefore(postDOMElement, parent.firstChild);
-  this.establishPostHandlers(postDOMElement);
 };
 
 ViewController.prototype.handleSubmit = function(data) {
