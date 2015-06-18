@@ -52,6 +52,24 @@ var API = {
     }
     return result;
   },
+  update: function(data) {
+    var result = {
+      status: 200
+    };
+
+    var item = localStorage.getItem(POST_KEY_PREFIX + data.id);
+
+    if(item && data.deleted) {
+      localStorage.removeItem(POST_KEY_PREFIX + data.id);
+    }
+    else if(!item && !data.deleted){
+
+      var stringData = JSON.stringify(data);
+      localStorage.setItem(POST_KEY_PREFIX + data.id, stringData);
+    }
+
+    return status;
+  },
   delete: function(data) {
     var result = {
       status: 200

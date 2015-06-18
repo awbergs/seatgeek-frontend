@@ -61,7 +61,6 @@
 	var ViewController = function(model) {
 	  this.model = model;
 	  this.postCollection = [];
-	  this.deletedPosts = [];
 	  this.actions = [];
 	  this.undoButton = document.getElementById('blog-undo-button');
 
@@ -144,11 +143,24 @@
 	};
 
 	ViewController.prototype.handleSubmit = function(data) {
-	  this.addPost(data);
+	  var response = this.addPost(data);
+	  if(response.status === 200){
+	    this.addAction({
+	      actionType: 'add',
+	      id: response.data.id
+	    });
+	  }
 	};
 
 	ViewController.prototype.handleDelete = function(data) {
-	  this.deletePost(data);
+	  var response = this.deletePost(data);
+
+	  if(response.status === 200){
+	    this.addAction({
+	      actionType: 'delete',
+	      id: response.data.id
+	    });
+	  }
 	};
 
 	ViewController.prototype.handleUndo = function() {
@@ -171,52 +183,65 @@
 	ViewController.prototype.undo = function() {
 	  var action = this.actions.shift();
 	  if(action){
-	    if(action.actionType == "add") {
-	      this.deletePost(action.data);
+	    var postModel = this.getPost(action.id);
+
+	    postModel.update({
+	      deleted: action.actionType === "add"
+	    });
+
+	    if(action.actionType === "add") {
+	      this.deletePostFromView(postModel);
 	    }
-	    else if(action.actionType == "delete") {
-	      this.addPost(action.data);
+	    else if(action.actionType === "delete") {
+	      this.addPostToView(postModel);
 	    }
 	  }
+
 	  if(this.actions.length === 0){
 	    this.hideUndo();
 	  }
+	};
+
+	ViewController.prototype.getPost = function(postId) {
+	  return _.find(this.postCollection, function(post){
+	    return post.attributes.id === postId;
+	  });
 	};
 
 	ViewController.prototype.addPost = function(data) {
 	  var postModel = new Post(data);
 	  var response = postModel.save();
 	  if (response.status === 200) {
-	    this.postCollection.push(postModel);
+	    //Only generate DOM Element and render if the save was successful
+	    response.data = postModel.attributes;
 
-	    this.addAction({
-	      actionType: 'add',
-	      data: postModel.attributes
-	    });
+	    this.postCollection.push(postModel);
+	    this.addPostToView(postModel);
 	  }
 
+	  return response;
+	};
+
+	ViewController.prototype.addPostToView = function(postModel) {
 	  var elements = this.generatePostDOMElements([postModel]);
 	  this.renderPost(elements[0]);
 	};
 
 	ViewController.prototype.deletePost = function(data) {
-	  var postModel = _.find(this.postCollection, function(post){
-	    return post.attributes.id === data.id;
-	  });
+	  var postModel = this.getPost(data.id);
 	  var response = postModel.delete();
 	  if(response.status === 200){
-	    _.remove(this.postCollection, function(post){
-	      return post === postModel;
-	    });
+	    response.data = postModel.attributes;
 
-	    var postDOMElement = document.getElementById('blog-post-' + data.id);
-	    postDOMElement.parentNode.removeChild(postDOMElement);
-
-	    this.addAction({
-	      actionType: 'delete',
-	      data: postModel.attributes
-	    });
+	    this.deletePostFromView(postModel);
 	  }
+
+	  return response;
+	};
+
+	ViewController.prototype.deletePostFromView = function(postModel) {
+	  var postDOMElement = document.getElementById('blog-post-' + postModel.attributes.id);
+	  postDOMElement.parentNode.removeChild(postDOMElement);
 	};
 
 	module.exports = ViewController;
@@ -280,6 +305,24 @@
 	    }
 	    return result;
 	  },
+	  update: function(data) {
+	    var result = {
+	      status: 200
+	    };
+
+	    var item = localStorage.getItem(POST_KEY_PREFIX + data.id);
+
+	    if(item && data.deleted) {
+	      localStorage.removeItem(POST_KEY_PREFIX + data.id);
+	    }
+	    else if(!item && !data.deleted){
+
+	      var stringData = JSON.stringify(data);
+	      localStorage.setItem(POST_KEY_PREFIX + data.id, stringData);
+	    }
+
+	    return status;
+	  },
 	  delete: function(data) {
 	    var result = {
 	      status: 200
@@ -306,12 +349,14 @@
 	  this.attributes = {
 	    id: attrs.id,
 	    title: attrs.title,
-	    body: attrs.body
+	    body: attrs.body,
+	    deleted: false
 	  }
 	};
 
 	Post.prototype.update = function(updateObject) {
 	  this.attributes = _.extend(this.attributes, updateObject);
+	  return API.update(this.attributes);
 	};
 
 	Post.prototype.save = function() {
