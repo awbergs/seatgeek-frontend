@@ -72,7 +72,7 @@
 	  this.fetchPosts();
 	  var elements = this.generatePostDOMElements(this.postCollection);
 	  this.renderPosts(elements);
-	}
+	};
 
 	ViewController.prototype.establishHandlers = function() {
 	  var that = this;
@@ -87,6 +87,18 @@
 	    });
 	  })
 	};
+
+	ViewController.prototype.establishPostHandlers = function(postDOMElement) {
+	  var that = this;
+	  postDOMElement.getElementsByClassName('blog-post__delete-section__button')[0]
+	  .addEventListener('click', function(e) {
+	    e.preventDefault();
+	    var postId = this.dataset.postid;
+	    that.handleDelete({
+	      id: postId
+	    });
+	  }); 
+	}
 
 	ViewController.prototype.fetchPosts = function() {
 	  var response = API.get();
@@ -108,19 +120,26 @@
 	};
 
 	ViewController.prototype.renderPosts = function(postDOMElements) {
+	  var that = this;
 	  var bodyContent = document.getElementsByClassName('blog-body__content')[0];
 	  postDOMElements.forEach(function(element) {
 	    bodyContent.appendChild(element);
+	    that.establishPostHandlers(element);
 	  });
 	};
 
 	ViewController.prototype.renderPost = function(postDOMElement) {
 	  var parent = document.getElementsByClassName('blog-body__content')[0];
 	  parent.insertBefore(postDOMElement, parent.firstChild);
+	  this.establishPostHandlers(postDOMElement);
 	};
 
 	ViewController.prototype.handleSubmit = function(data) {
 	  this.addPost(data);
+	};
+
+	ViewController.prototype.handleDelete = function(data) {
+	  this.deletePost(data);
 	};
 
 	ViewController.prototype.addPost = function(data) {
@@ -132,7 +151,11 @@
 
 	  var elements = this.generatePostDOMElements([postModel]);
 	  this.renderPost(elements[0]);
-	}
+	};
+
+	ViewController.prototype.deletePost = function(data) {
+	  console.log(data);
+	};
 
 	module.exports = ViewController;
 
@@ -194,6 +217,9 @@
 	      result.body = stringData;
 	    }
 	    return result;
+	  },
+	  delete: function(id) {
+	    
 	  }
 	}
 
